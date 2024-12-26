@@ -1,0 +1,2 @@
+Flask
+sqlite3  # (comes with Python, no separate install needed for sqlite3 itself)
