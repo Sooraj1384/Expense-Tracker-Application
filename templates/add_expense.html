@@ -1,28 +1,60 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Add Expense</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <div class="container">
-        <h2>Add a New Expense</h2>
-        <form method="POST">
-            <label for="date">Date:</label>
-            <input type="date" id="date" name="date" required>
+{% extends "base.html" %}
 
-            <label for="amount">Amount:</label>
-            <input type="number" id="amount" name="amount" step="0.01" required>
+{% block title %}Add Expense{% endblock %}
 
-            <label for="category">Category:</label>
-            <input type="text" id="category" name="category" required>
+{% block content %}
+<div class="container">
+  <h2>Add a New Expense</h2>
 
-            <label for="description">Description:</label>
-            <textarea id="description" name="description"></textarea>
-
-            <button type="submit" class="button">Add Expense</button>
-        </form>
+  <form method="POST" action="{{ url_for('expenses.add_expense') }}">
+    <div class="mb-3">
+      <label for="date" class="form-label">Date:</label>
+      <input type="date" id="date" name="date" class="form-control" required />
     </div>
-</body>
-</html>
+
+    <div class="mb-3">
+      <label for="amount" class="form-label">Amount:</label>
+      <input type="number" id="amount" name="amount" step="0.01" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+      <label for="category_id" class="form-label">Category:</label>
+      <select id="category_id" name="category_id" class="form-select" required onchange="toggleNewCategoryInput()">
+        <option value="" disabled selected>Select category</option>
+        {% for category in categories %}
+          <option value="{{ category.category_id }}">{{ category.category_name }}</option>
+        {% endfor %}
+        <option value="new">Add new category...</option>
+      </select>
+    </div>
+
+    <div id="new-category-div" style="display:none;" class="mb-3">
+      <label for="new_category_name" class="form-label">New Category Name:</label>
+      <input type="text" id="new_category_name" name="new_category_name" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+      <label for="description" class="form-label">Description:</label>
+      <textarea id="description" name="description" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add Expense</button>
+  </form>
+</div>
+
+<script>
+  function toggleNewCategoryInput() {
+    var select = document.getElementById("category_id");
+    var newCatDiv = document.getElementById("new-category-div");
+    if (select.value == "new") {
+      newCatDiv.style.display = "block";
+      document.getElementById("new_category_name").required = true;
+      select.removeAttribute("required");
+    } else {
+      newCatDiv.style.display = "none";
+      document.getElementById("new_category_name").required = false;
+      select.setAttribute("required", "required");
+    }
+  }
+</script>
+{% endblock %}

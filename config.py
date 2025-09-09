@@ -1,8 +1,7 @@
 import os
 
-
 class Config:
-    # Database connection URL
-    DATABASE_URL = os.getenv("DATABASE_URL",
-                             "postgres://postgres.bdlfkovhmdfetrkiywre:J65RlnOiG0hj9yIX@aws-0-us-east-1.pooler.supabase.com:6543/postgres?sslmode=require"
-)
+    DATABASE_URL = os.getenv(
+        "DATABASE_URL",
+        "postgresql://postgres:Sooraj%407050@db.vfzhypsthwftwrzkxgtx.supabase.co:5432/postgres"
+    )

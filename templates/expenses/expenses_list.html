@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}My Expenses{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+  <h2 class="mb-4">My Expenses</h2>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Date</th>
+          <th>Amount</th>
+          <th>Category</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for expense in expenses %}
+        <tr>
+          <td>{{ expense.date }}</td>
+          <td>{{ "%.2f"|format(expense.amount) }}</td>
+          <td>{{ expense.category_name or expense.category_id }}</td>
+          <td>{{ expense.description or '-' }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="text-center">No expenses found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <hr />
+
+  <h3>Add New Expense</h3>
+  <form action="{{ url_for('expenses.add_expense') }}" method="POST" novalidate>
+    <div class="mb-3">
+      <label for="date" class="form-label">Date</label>
+      <input type="date" class="form-control" id="date" name="date" required />
+    </div>
+    <div class="mb-3">
+      <label for="amount" class="form-label">Amount</label>
+      <input type="number" step="0.01" min="0" class="form-control" id="amount" name="amount" required />
+    </div>
+    <div class="mb-3">
+      <label for="category_id" class="form-label">Category</label>
+      <select class="form-select" id="category_id" name="category_id" onchange="toggleNewCategoryInput()" required>
+        <option value="" disabled selected>Select category</option>
+        {% for category in categories %}
+        <option value="{{ category.category_id }}">{{ category.category_name }}</option>
+        {% endfor %}
+        <option value="new">Add new category...</option>
+      </select>
+    </div>
+
+    <div class="mb-3" id="new-category-div" style="display:none;">
+      <label for="new_category_name" class="form-label">New Category Name</label>
+      <input type="text" id="new_category_name" name="new_category_name" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+      <label for="description" class="form-label">Description</label>
+      <input type="text" class="form-control" id="description" name="description" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Add Expense</button>
+  </form>
+</div>
+
+<script>
+function toggleNewCategoryInput() {
+  var select = document.getElementById("category_id");
+  var newCatDiv = document.getElementById("new-category-div");
+  if (select.value === "new") {
+    newCatDiv.style.display = "block";
+    document.getElementById("new_category_name").required = true;
+    select.removeAttribute("required");
+  } else {
+    newCatDiv.style.display = "none";
+    document.getElementById("new_category_name").required = false;
+    select.setAttribute("required", "required");
+  }
+}
+</script>
+{% endblock %}
