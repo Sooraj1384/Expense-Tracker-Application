@@ -1,7 +1,8 @@
 # auth/routes.py
-from flask import Blueprint, request, jsonify, session, render_template, redirect, url_for, flash
+from flask import Blueprint, request, jsonify, session, render_template, redirect, url_for, flash, get_flashed_messages
 import requests
 import os
+from auth.utils import sync_supabase_user_to_db
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -38,6 +39,10 @@ def register():
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
+    if request.method == "GET":
+        get_flashed_messages()
+
+
     if request.method == 'POST':
         data = request.form
         email = data.get('email')
@@ -58,8 +63,10 @@ def login():
             session['access_token'] = resp_json.get('access_token')
             session['refresh_token'] = resp_json.get('refresh_token')
             session['user'] = resp_json.get('user')
+            sync_supabase_user_to_db(session.get("user"))
             if session['access_token'] and session['user']:
-                flash("Login successful", "success")
+                # Flash login success message only here
+                # flash("successful", "success")
                 return redirect(url_for('expenses.expenses_list'))
             else:
                 flash("Login failed: Invalid response from server", "danger")
@@ -77,8 +84,3 @@ def logout():
     session.clear()
     flash("Logged out successfully", "success")
     return redirect(url_for('auth.login'))
-
-
-# Optional: helper to get current logged in user from session
-def get_current_user():
-    return session.get('user')

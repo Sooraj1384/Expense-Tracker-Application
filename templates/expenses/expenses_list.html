@@ -3,7 +3,8 @@
 {% block title %}My Expenses{% endblock %}
 
 {% block content %}
-<div class="container my-4">
+
+    <div class="container my-4">
   <h2 class="mb-4">My Expenses</h2>
 
   {% with messages = get_flashed_messages(with_categories=true) %}
@@ -94,4 +95,53 @@ function toggleNewCategoryInput() {
   }
 }
 </script>
+
+    <div class="modal fade" id="allExpensesModal" tabindex="-1" aria-labelledby="allExpensesLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="allExpensesLabel">All Expenses</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <table class="table table-striped table-hover align-middle" id="allExpensesTable">
+            <thead>
+              <tr>
+                <th>Date</th><th>Amount</th><th>Category</th><th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Expenses will be dynamically appended here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <script>
+  document.getElementById('navMyExpenses').addEventListener('click', function() {
+    fetch('{{ url_for("expenses.all_expenses") }}')
+      .then(response => response.json())
+      .then(data => {
+        const tbody = document.querySelector('#allExpensesTable tbody');
+        tbody.innerHTML = '';
+
+        data.forEach(expense => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${expense.date}</td>
+            <td>${expense.amount.toFixed(2)}</td>
+            <td>${expense.category_name || expense.category_id}</td>
+            <td>${expense.description || '-'}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      })
+      .catch(err => {
+        alert('Failed to load all expenses: ' + err.message);
+      });
+  });
+</script>
+
 {% endblock %}

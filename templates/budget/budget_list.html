@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Budget - Expense Tracker{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <h2 class="mb-4">Budget Overview</h2>
+  <p>Monthly Limit: ₹{{ budget.monthly_limit }}</p>
+  <p>Spent: ₹{{ budget.spent }}</p>
+  <p>Remaining: ₹{{ budget.remaining }}</p>
+  <!-- Add charts or detailed budget UI here -->
+</div>
+{% endblock %}
